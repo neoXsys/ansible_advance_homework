@@ -14,24 +14,55 @@
     username: "{{ user_cred_name }}"
 
 - name: Create Organization "{{org_name}}"
-  command: |
-    tower-cli organization create --name="{{org_name}}"
+  tower_organization:
+    name: "{{org_name}}"
+    description: "{{org_name}} Organization"
+    state: present  
 
 - name: Create Project "{{ proj_name }}" under "{{org_name}}" Organization
-  command: |
-    tower-cli project create --name "{{ proj_name }}" --organization "{{org_name}}" --scm-type git --scm-url "{{ scm_url }}" --wait
+  tower_project:
+    name: "{{ proj_name }}"
+    description: "{{ proj_name }} Project"
+    organization: "{{org_name}}"
+    scm_type: "{{ scm_type }}"
+    scm_url: "{{ scm_url }}"
+    scm_branch: "{{ scm_branch }}"
+    scm_update_on_launch: yes
 
 - name: Create Inventory "{{static_inventory_name}}" under "{{org_name}}" Organization
-  command: |
-    tower-cli inventory create --name "{{static_inventory_name}}" --organization "{{org_name}}"
+  tower_inventory:
+    name: "{{static_inventory_name}}"
+    description: "{{static_inventory_name}} Inventory"
+    organization: "{{org_name}}"
+    state: present
+
+#- name: Create Inventory "{{static_inventory_name}}" under "{{org_name}}" Organization
+#  command: |
+#    tower-cli inventory create --name "{{static_inventory_name}}" --organization "{{org_name}}"
 
 - name: Create Group "{{group_name}}" in static inventory "{{static_inventory_name}}"
-  command: |
-    tower-cli group create --inventory "{{static_inventory_name}}"  --name "{{group_name}}"
+  tower_group:
+    name: "{{group_name}}"
+    description: "{{group_name}} at {{static_inventory_name}}"
+    inventory: "{{static_inventory_name}}"
+    state: present
 
-- name: Add workstation host "{{host_name}}" in tower inventory "{{static_inventory_name}}" 
-  command: |
-    tower-cli host create --inventory "{{static_inventory_name}}" --name "{{host_name}}"
+#- name: Create Group "{{group_name}}" in static inventory "{{static_inventory_name}}"
+#  command: |
+#    tower-cli group create --inventory "{{static_inventory_name}}"  --name "{{group_name}}"
+
+- name: Add workstation host "{{host_name}}" in tower inventory "{{static_inventory_name}}"
+  tower_host:
+    name: "{{host_name}}"
+    description: "{{host_name}} at {{static_inventory_name}}"
+    inventory: "{{static_inventory_name}}"
+#   group: "{{group_name}}" ### TODO: Introduce "group" or "group_associate" token for module to avoid seprate shell command for host/group association
+    state: present
+
+#- name: Add workstation host "{{host_name}}" in tower inventory "{{static_inventory_name}}" 
+#  command: |
+#    tower-cli host create --inventory "{{static_inventory_name}}" --name "{{host_name}}"
+
 
 - name: Associate workstation host "{{host_name}}" to group "{{group_name}}"
   command: | 

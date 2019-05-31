@@ -1,6 +1,7 @@
 ---
 # vars file for roles/config-tower
 org_name: Default
+scm_type: git
 scm_branch: master 
 scm_url: "{{ github_repo }}"
 proj_name: "Homework Assignment"
@@ -19,6 +20,7 @@ host_name: workstation-{{osp_GUID}}.rhpds.opentlc.com
 job_template_name_3tier_app: "3tier app deployment on QA Env"
 app_deploy_playbook: site-3tier-app.yml
 vault_name: yum_repo_vault
+vault_password: ansible
 job_template_name_osp_instances_delete: "Nuke QA Env"
 osp_instances_delete_playbook: site-osp-delete.yml
 job_template_smoke_osp: "Smoke test QA Env"
