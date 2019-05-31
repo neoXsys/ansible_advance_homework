@@ -1,11 +1,12 @@
 export OSP_GUID=6114
-export OSP_HOST=workstation-${OSP_GUID}.rhpds.opentlc.com
+export OSP_WORKSTATION_HOST=workstation-${OSP_GUID}.rhpds.opentlc.com
 export TOWER_GUID=cb0e
-export TOWER_HOST=bastion.${TOWER_GUID}.example.opentlc.com
+export TOWER_BASTION_HOST=bastion.${TOWER_GUID}.example.opentlc.com
+#export TOWER_HOST=tower1.${TOWER_GUID}.example.opentlc.com
 export MYKEY=~/.ssh/id_rsa
 export MYUSER=hdalwadi-redhat.com
-export OSP="$MYUSER@${OSP_HOST}"
-export TOWER="$MYUSER@${TOWER_HOST}"
+export OSP="$MYUSER@${OSP_WORKSTATION_HOST}"
+export TOWER="$MYUSER@${TOWER_BASTION_HOST}"
 export OPENTLC_LOGIN=hdalwadi-redhat.com
 export GITHUB_REPO=https://github.com/neoXsys/ansible_advance_homework.git
 export JQ_REPO_BASE=http://www.opentlc.com/download/ansible_bootcamp

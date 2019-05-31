@@ -1,46 +1,53 @@
-- name: Create Homework Assignment project 
+# Create Homework Assignment project 
 # Use tower module or tower-cli to create Ansible Tower project. Name of the project is specifed in ./vars/main.yml
 
 - name: Machine Credentail to connect to workstation using openstack.pub
   tower_credential:
-    name: Connect_to_workstation
-    organization: Default
+    name: "{{ ssh_cred_name }}"
+    organization: "{{org_name}}"
     state: present
     kind: ssh
     tower_host: tower1.{{tower_GUID}}.example.opentlc.com
-    tower_username: admin
-    tower_password: r3dh4t1!
-    ssh_key_data: "/root/.ssh/openstack.pem"
-    username: cloud-user
+    tower_username: "{{ user_name }}"
+    tower_password: "{{ password }}"
+    ssh_key_data: "{{ user_cred_path }}"
+    username: "{{ user_cred_name }}"
 
-- name: Create Inventory
+- name: Create Organization "{{org_name}}"
   command: |
-    tower-cli inventory create -n "{{static_inventory_name}}" --organization "{{org_name}}"
+    tower-cli organization create --name="{{org_name}}"
 
-- name: Create Group in static inventory 
+- name: Create Project "{{ proj_name }}" under "{{org_name}}" Organization
   command: |
-    tower-cli group create --inventory "{{static_inventory_name}}"  --name {{group_name}}
+    tower-cli project create --name "{{ proj_name }}" --organization "{{org_name}}" --scm-type git --scm-url "{{ scm_url }}" --wait
 
-- name: Add workstation host in tower_inventory 
+- name: Create Inventory "{{static_inventory_name}}" under "{{org_name}}" Organization
+  command: |
+    tower-cli inventory create --name "{{static_inventory_name}}" --organization "{{org_name}}"
+
+- name: Create Group "{{group_name}}" in static inventory "{{static_inventory_name}}"
+  command: |
+    tower-cli group create --inventory "{{static_inventory_name}}"  --name "{{group_name}}"
+
+- name: Add workstation host "{{host_name}}" in tower inventory "{{static_inventory_name}}" 
   command: |
     tower-cli host create --inventory "{{static_inventory_name}}" --name "{{host_name}}"
 
-- name: Associate workstation host to group 
+- name: Associate workstation host "{{host_name}}" to group "{{group_name}}"
   command: | 
     tower-cli host associate --host "{{host_name}}" --group "{{group_name}}"
-
 
 - name: Tower Creds key file
   tower_credential:
     name: "{{ opentlc_cred_name }}"
-    organization: Default
+    organization: "{{org_name}}"
     state: present
     kind: ssh
     tower_host: tower1.{{tower_GUID}}.example.opentlc.com
-    tower_username: admin
-    tower_password: r3dh4t1!
+    tower_username: "{{ user_name }}"
+    tower_password: "{{ password }}"
     tower_verify_ssl: no
-    ssh_key_data: /root/.ssh/mykey.pem
+    ssh_key_data: /root/.ssh/id_rsa
     username: "{{ opentlc_login }}"
 
 - name: Remove secret
